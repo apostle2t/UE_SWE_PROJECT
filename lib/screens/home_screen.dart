@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         _mealNameController.clear();
       });
+      // This displays a snackbar confirmation
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Meal logged successfully!'),
@@ -111,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           actions: [
+            // Cancel and Save buttons
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
@@ -120,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+
             ElevatedButton(
               onPressed: () {
                 if (editController.text.isNotEmpty) {

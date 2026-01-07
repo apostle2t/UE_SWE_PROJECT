@@ -71,24 +71,32 @@ class MealCard extends StatelessWidget {
               ],
             ),
           ),
-          // DEBUG: Testing with simple text instead of buttons
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            color: Colors.green,
-            child: const Text(
-              'EDIT',
-              style: TextStyle(color: Colors.white, fontSize: 12),
+          // Edit button
+          if (onEdit != null)
+            IconButton(
+              icon: Icon(
+                Icons.edit_outlined,
+                color: isDarkMode ? Colors.white70 : Colors.grey[600],
+                size: 20,
+              ),
+              onPressed: onEdit,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              tooltip: 'Edit meal',
             ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            color: Colors.red,
-            child: const Text(
-              'DEL',
-              style: TextStyle(color: Colors.white, fontSize: 12),
+          // Delete button
+          if (onDelete != null)
+            IconButton(
+              icon: Icon(
+                Icons.delete_outline,
+                color: Colors.red[400],
+                size: 20,
+              ),
+              onPressed: onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              tooltip: 'Delete meal',
             ),
-          ),
         ],
       ),
     );
