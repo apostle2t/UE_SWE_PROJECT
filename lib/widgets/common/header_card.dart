@@ -117,4 +117,21 @@ class HeaderCard extends StatelessWidget {
       ],
     );
   }
+
+  /// Factory constructor for teal/blue gradient card (for Help)
+  factory HeaderCard.blue({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    return HeaderCard(
+      title: title,
+      subtitle: subtitle,
+      icon: icon,
+      gradientColors: const [
+        AppColors.accentTeal,
+        AppColors.blueGradientStart,
+      ],
+    );
+  }
 }

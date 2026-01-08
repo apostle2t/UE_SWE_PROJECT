@@ -23,4 +23,5 @@ class AppColors {
   static const Color purpleGradientEnd = Color(0xFF9C27B0);
   static const Color blueGradientStart = Color(0xFF5C6BC0);
   static const Color blueGradientEnd = Color(0xFF7E57C2);
+  static const Color accentTeal = Color(0xFF26A69A);
 }

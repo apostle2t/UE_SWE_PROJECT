@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../models/meal.dart';
-import '../../theme/app_colors.dart';
-import '../../data/sample_data.dart';
-import '../../widgets/tabs/log_tab.dart';
-import '../../widgets/tabs/history_tab.dart';
-import '../../widgets/tabs/stats_tab.dart';
+import '../models/meal.dart';
+import '../theme/app_colors.dart';
+import '../repositories/meal_repository.dart';
+import '../widgets/tabs/log_tab.dart';
+import '../widgets/tabs/history_tab.dart';
+import '../widgets/tabs/stats_tab.dart';
+import '../widgets/tabs/help_tab.dart';
 
 /// Main home screen of the NutriTrack app
 class HomeScreen extends StatefulWidget {
@@ -28,40 +29,75 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
-  // Meal data
-  late List<Meal> _meals;
+  // Repository and meal data
+  final MealRepository _mealRepository = MealRepository();
+  List<Meal> _meals = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _meals = SampleData.getSampleMeals();
+    _loadMeals();
   }
 
-  void _logMeal() {
-    if (_mealNameController.text.isNotEmpty) {
+  /// Load all meals from the database
+  Future<void> _loadMeals() async {
+    setState(() => _isLoading = true);
+    try {
+      final meals = await _mealRepository.getAllMeals();
       setState(() {
-        _meals.insert(
-          0,
-          Meal(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            name: _mealNameController.text,
-            date: _selectedDate,
-            time: _selectedTime,
+        _meals = meals;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading meals: $e'),
+            backgroundColor: Colors.red,
           ),
         );
-        _mealNameController.clear();
-      });
-      // This displays a snackbar confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Meal logged successfully!'),
-          backgroundColor: AppColors.primaryGreen,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+      }
+    }
+  }
+
+  Future<void> _logMeal() async {
+    if (_mealNameController.text.isNotEmpty) {
+      final meal = Meal(
+        id: Meal.generateId(),
+        name: _mealNameController.text,
+        date: _selectedDate,
+        time: _selectedTime,
       );
+
+      try {
+        await _mealRepository.insertMeal(meal);
+        _mealNameController.clear();
+        await _loadMeals(); // Refresh the list
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Meal logged successfully!'),
+              backgroundColor: AppColors.primaryGreen,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error saving meal: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -124,25 +160,36 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (editController.text.isNotEmpty) {
-                  setState(() {
-                    final index = _meals.indexWhere((m) => m.id == meal.id);
-                    if (index != -1) {
-                      _meals[index] = meal.copyWith(name: editController.text);
+                  final updatedMeal = meal.copyWith(name: editController.text);
+                  try {
+                    await _mealRepository.updateMeal(updatedMeal);
+                    Navigator.pop(context);
+                    await _loadMeals(); // Refresh the list
+
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Meal updated successfully!'),
+                          backgroundColor: AppColors.primaryGreen,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
                     }
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Meal updated successfully!'),
-                      backgroundColor: AppColors.primaryGreen,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  );
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error updating meal: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -193,21 +240,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _meals.removeWhere((m) => m.id == meal.id);
-                });
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Meal deleted successfully!'),
-                    backgroundColor: Colors.red.shade400,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
+              onPressed: () async {
+                try {
+                  await _mealRepository.deleteMeal(meal.id);
+                  Navigator.pop(context);
+                  await _loadMeals(); // Refresh the list
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Meal deleted successfully!'),
+                        backgroundColor: Colors.red.shade400,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error deleting meal: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade400,
@@ -383,6 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildTab('Log', 0),
           _buildTab('History', 1),
           _buildTab('Stats', 2),
+          _buildTab('Help', 3),
         ],
       ),
     );
@@ -443,6 +504,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case 2:
         return StatsTab(
           meals: _meals,
+          isDarkMode: widget.isDarkMode,
+        );
+      case 3:
+        return HelpTab(
           isDarkMode: widget.isDarkMode,
         );
       default:
