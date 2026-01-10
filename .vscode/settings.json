@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "pubspec.yaml": "yaml",
+        "*.yaml": "yaml",
+        "*.yml": "yaml"
+    },
+    "yaml.format.enable": false,
+    "[yaml]": {
+        "editor.defaultFormatter": null
+    },
+    "debug.javascript.autoAttachFilter": "disabled"
+}
