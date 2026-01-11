@@ -28,6 +28,40 @@ Technologies That Were Used
 -SQLite – Local database for meal storage
 -Android Studio – Development and demonstration environment
 
+Project Structure
+
+lib/
+├── data/
+│   └── sample_data.dart
+├── database/
+│   └── database_helper.dart
+├── models/
+│   └── meal.dart
+├── repositories/
+│   └── meal_repository.dart
+├── screens/
+│   └── home_screen.dart
+├── theme/
+│   ├── app_colors.dart
+│   └── app_theme.dart
+├── utils/
+│   ├── stats_calculator.dart
+│   └── time_formatter.dart
+├── widgets/
+│   ├── common/
+│   │   ├── custom_text_field.dart
+│   │   ├── header_card.dart
+│   │   ├── meal_bar_chart.dart
+│   │   ├── meal_card.dart
+│   │   └── stat_card.dart
+│   └── tabs/
+│       ├── help_tab.dart
+│       ├── history_tab.dart
+│       ├── log_tab.dart
+│       └── stats_tab.dart
+└── main.dart
+
+
 Application Logic Overview
 -Meals are stored locally using SQLite
 -Each meal contains:
