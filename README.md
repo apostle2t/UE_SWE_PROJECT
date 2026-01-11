@@ -76,3 +76,5 @@ How to Run the App
 -Open the project in Android Studio
 -Ensure Flutter SDK is installed and configured
 -Launch the app on an Android emulator or physical device
+Improve README documentation and add project definitions
+
