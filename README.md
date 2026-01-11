@@ -1,16 +1,44 @@
-# nutritrack_application_1
+NutriTrack is a mobile meal-tracking application developed using Flutter.
+The app allows users to log meals with a specific date and time, store them locally using SQLite, and view insightful statistics about their eating habits.
+It is designed with a clean, modern UI and supports light and dark modes.
 
-A new Flutter project.
+Features
+-Log Meals
+-Add meals with a name, date, and time
+-Simple and intuitive logging interface
+-Meal History
+-View all logged meals grouped by date
+-Search meals by name
+-Edit or delete previously logged meals
+-Statistics Dashboard
+-Meals logged this week
+-Meals logged this month
+-Current day streak
+-Total meals logged
+-Bar chart showing meals over the last 7 days
+-Local Data Storage
+-Uses SQLite for persistent local storage
+-Data remains available between app sessions
+-Dark & Light Mode
+-Help Screen
+-Provides guidance on how to use the application
 
-## Getting Started
+Technologies That Were Used
+-Flutter (Dart) – UI development and application logic
+-SQLite – Local database for meal storage
+-Android Studio – Development and demonstration environment
 
-This project is a starting point for a Flutter application.
+Application Logic Overview
+-Meals are stored locally using SQLite
+-Each meal contains:
+-Meal name
+-Date
+-Time
+-Utility classes handle:
+-Date/time formatting
+-Statistical calculations
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+How to Run the App
+-Open the project in Android Studio
+-Ensure Flutter SDK is installed and configured
+-Launch the app on an Android emulator or physical device
